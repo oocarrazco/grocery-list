@@ -1,0 +1,45 @@
+## Build output
+bin/
+obj/
+
+## User-specific files
+*.user
+*.suo
+*.userosscache
+*.sln.docstates
+
+## VS Code
+.vscode/
+.vs/
+
+## Rider
+.idea/
+
+## ASP.NET Core
+appsettings.Development.json
+appsettings.Local.json
+appsettings.*.json
+*.db
+*.db-shm
+*.db-wal
+
+## Logs
+*.log
+logs/
+
+## Secrets
+secrets.json
+
+## Publish output
+publish/
+out/
+
+## Packages
+*.nupkg
+*.snupkg
+.nuget/
+packages/
+
+## Dotnet environment
+.project/
+*.pidb
