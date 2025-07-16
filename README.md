@@ -1,0 +1,37 @@
+# Grocery List Project
+
+This repository contains a full-stack grocery list application with separate frontend and backend components, designed for easy management of grocery items and lists.
+
+## Project Structure
+
+  - `src/app/`: Contains components, models, and services for managing grocery lists and items.
+  - `angular.json`, `package.json`: Angular and npm configuration files.
+
+  - `Controllers/`: API endpoints for grocery lists and items.
+  - `Models/`, `DTOs/`, `Repositories/`, `Services/`: Business logic and data access layers.
+  - `appsettings.json`: API configuration.
+
+## Getting Started
+
+### Prerequisites
+Node.js & npm (for frontend development)
+Angular (version 19.1.0)
+.NET 6/8 SDK (for backend development)
+
+### Development
+- **Frontend**: Navigate to `GroceryList-FRONTEND/` and run:
+  ```powershell
+  npm install; ng serve
+  ```
+- **Backend**: Navigate to `GroceryList-RESTAPI/` and run:
+  ```powershell
+  dotnet run
+  ```
+
+## Features
+- Create, update, and delete grocery lists and items
+- Mark items as purchased
+- Responsive UI with Angular
+- RESTful API with ASP.NET Core
+
+

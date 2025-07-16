@@ -1,0 +1,26 @@
+name: Auto Create Pull Request
+
+on:
+  push:
+    branches:
+      - '**' # Monitor all branches except the base branch
+      - '!main' # Adjust "main" to your actual base branch name
+
+jobs:
+  create-pull-request:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Create Pull Request
+        uses: repo-sync/pull-request@v2
+        with:
+          destination_branch: main # Replace with your base branch
+          pr_title: "Automated PR from ${{ github.ref_name }}"
+          pr_body: "This pull request was created automatically after pushing changes to ${{ github.ref_name }}."
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+
+
+
