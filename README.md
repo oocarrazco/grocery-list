@@ -25,7 +25,7 @@ Angular (version 19.1.0)
   ```
 - **Backend**: Navigate to `GroceryList-RESTAPI/` and run:
   ```powershell
-  dotnet run
+  dotnet run --project GroceryListApi.csproj
   ```
 
 ## Features

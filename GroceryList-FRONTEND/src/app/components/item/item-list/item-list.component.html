@@ -1,0 +1,44 @@
+<div class="bg-white rounded shadow">
+  <div class="p-4 border-bottom fw-bold text-center d-flex">
+    <div class="flex-grow-1 text-start">Item Name</div>
+    <div class="w-10">Quantity</div>
+    <div class="w-25">Created At</div>
+    <div class="w-25">Updated At</div>
+    <div class="w-10">Actions</div>
+  </div>
+
+  <div *ngFor="let item of groceryItems" class="grocery-item p-4 border-bottom last:border-bottom-0 text-center d-flex align-items-center">
+    <div class="flex-grow-1 text-start">
+      <input
+        type="checkbox"
+        [checked]="item.isPurchased"
+        (change)="togglePurchased(item)"
+        class="form-check-input me-2"
+      />
+      <span [class.line-through]="item.isPurchased">
+        {{ item.name }}
+      </span>
+    </div>
+    <div class="w-10">{{ item.quantity }}</div>
+    <div class="w-25">{{ item.createdAt | date: 'medium' }}</div>
+    <div class="w-25">{{ item.updatedAt | date: 'medium' }}</div>
+    <div class="w-10 d-flex gap-2 justify-content-center">
+      <button
+        (click)="editItem(item)"
+        class="btn btn-sm btn-primary"
+      >
+        Edit
+      </button>
+      <button
+        (click)="deleteItem(item.id)"
+        class="btn btn-sm btn-danger"
+      >
+        Delete
+      </button>
+    </div>
+  </div>
+
+  <div *ngIf="groceryItems.length === 0" class="p-4 text-center text-muted">
+    No items in the list. Add some groceries!
+  </div>
+</div>
