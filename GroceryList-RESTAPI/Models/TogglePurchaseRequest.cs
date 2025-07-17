@@ -2,6 +2,6 @@
 {
     public class TogglePurchaseRequest
     {
-        public bool IsPurchased { get; internal set; }
+        public bool IsPurchased { get; set; }
     }
 }
