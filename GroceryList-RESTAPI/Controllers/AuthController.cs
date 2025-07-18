@@ -39,7 +39,27 @@ namespace GroceryListApi.Controllers
             }
 
             _logger.LogInformation("User {Username} logged in successfully", loginDto.Username);
-            return Ok(new LoginResponseDto { Success = true, Message = "Login successful" });
+            return Ok(new LoginResponseDto { Success = true, Message = "Login successful", UserId = user.Id });
+        }
+
+        [HttpPost("register")]
+        public async Task<ActionResult<LoginResponseDto>> Register([FromBody] LoginRequestDto registerDto)
+        {
+            _logger.LogInformation("Register attempt for user {Username}", registerDto.Username);
+
+            if (await _context.Users.AnyAsync(u => u.Username == registerDto.Username))
+            {
+                _logger.LogWarning("Username {Username} already exists", registerDto.Username);
+                return Conflict(new LoginResponseDto { Success = false, Message = "Username already exists" });
+            }
+
+            var hashed = BCrypt.Net.BCrypt.HashPassword(registerDto.Password);
+            var newUser = new User { Username = registerDto.Username, PasswordHash = hashed };
+            _context.Users.Add(newUser);
+            await _context.SaveChangesAsync();
+            _logger.LogInformation("User {Username} registered successfully", registerDto.Username);
+
+            return Ok(new LoginResponseDto { Success = true, Message = "Registration successful", UserId = newUser.Id });
         }
     }
 } 

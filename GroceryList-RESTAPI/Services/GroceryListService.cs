@@ -19,10 +19,10 @@ namespace GroceryListApi.Services
         }
 
 
-        public async Task<List<GroceryListDto>> GetAllLists()
+        public async Task<List<GroceryListDto>> GetAllLists(int? userId = null)
         {
-            _logger.LogInformation("GetAllLists called");
-            var lists = await _listRepo.GetAllAsync();
+            _logger.LogInformation("GetAllLists called with userId={UserId}", userId);
+            var lists = await _listRepo.GetAllAsync(userId);
             _logger.LogInformation("GetAllLists returned {Count} lists", lists.Count);
             return _mapper.Map<List<GroceryListDto>>(lists);
         }

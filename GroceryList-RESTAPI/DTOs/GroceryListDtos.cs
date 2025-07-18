@@ -20,6 +20,7 @@ namespace GroceryListApi.DTOs
     public class GroceryListCreateDto
     {
         public required string Name { get; set; }
+        public required int UserId { get; set; }
     }
 
     public class GroceryListUpdateDto

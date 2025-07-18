@@ -13,10 +13,15 @@ namespace GroceryListApi.Repositories
             _logger = logger;
         }
 
-        public async Task<List<GroceryList>> GetAllAsync()
+        public async Task<List<GroceryList>> GetAllAsync(int? userId = null)
         {
             _logger.LogInformation("GetAllAsync called");
-            var lists = await _context.GroceryLists.Include(l => l.Items).ToListAsync();
+            IQueryable<GroceryList> query = _context.GroceryLists.Include(l => l.Items);
+            if (userId.HasValue)
+            {
+                query = query.Where(l => l.UserId == userId.Value);
+            }
+            var lists = await query.ToListAsync();
             _logger.LogInformation("GetAllAsync returned {Count} lists", lists.Count);
         return lists.Cast<GroceryList>().ToList();
         }
@@ -39,7 +44,7 @@ namespace GroceryListApi.Repositories
         public async Task<GroceryList> AddAsync(GroceryList list)
         {
             _logger.LogInformation("AddAsync called");
-        var newList = new GroceryList { Name = list.Name, UserId = list.UserId > 0 ? list.UserId : 1 };
+        var newList = new GroceryList { Name = list.Name, UserId = list.UserId };
             _context.GroceryLists.Add(newList);
             await _context.SaveChangesAsync();
             _logger.LogInformation("GroceryList added with id={Id}", newList.Id);
