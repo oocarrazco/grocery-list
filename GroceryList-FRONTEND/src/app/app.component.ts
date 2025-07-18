@@ -9,6 +9,8 @@ import { HeaderComponent } from './components/header/header.component';
 import { FooterComponent } from './components/footer/footer.component';
 import { ItemDetailComponent } from './components/item/item-detail/item-detail.component';
 import { GroceryListManagerComponent } from './components/grocery-list-manager/grocery-list-manager.component';
+import { AuthService } from './services/auth.service';
+import { LoginComponent } from './components/login/login.component';
 
 @Component({
   selector: 'app-grocery-list',
@@ -18,8 +20,8 @@ import { GroceryListManagerComponent } from './components/grocery-list-manager/g
     FormsModule,
     HeaderComponent,
     FooterComponent,
-    // ItemDetailComponent, // Removed because it is not used in the template
-    GroceryListManagerComponent
+    GroceryListManagerComponent,
+    LoginComponent
   ],
   templateUrl: './app.component.html',
   styleUrls: ['./app.component.css']
@@ -27,10 +29,12 @@ import { GroceryListManagerComponent } from './components/grocery-list-manager/g
 export class GroceryListComponent implements OnInit {
   groceryLists: GroceryList[] = [];
 
-  constructor(private groceryListService: GroceryListService) {}
+  constructor(private groceryListService: GroceryListService, public authService: AuthService) {}
 
   ngOnInit(): void {
-    this.loadGroceryLists();
+    if (this.authService.isLoggedIn()) {
+      this.loadGroceryLists();
+    }
   }
 
   loadGroceryLists(): void {
@@ -40,5 +44,9 @@ export class GroceryListComponent implements OnInit {
       },
       error: (error) => console.error('Error loading grocery lists:', error)
     });
+  }
+
+  afterLogin(): void {
+    this.loadGroceryLists();
   }
 }

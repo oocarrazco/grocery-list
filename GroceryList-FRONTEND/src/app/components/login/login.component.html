@@ -1,0 +1,31 @@
+<div class="login-container">
+  <img src="assets/login-icon.png" alt="Grocery List" class="login-image" />
+  <h2>Welcome to the grocery List App</h2>
+
+  <form (ngSubmit)="onSubmit()" #loginForm="ngForm" class="login-form">
+    <div class="form-group">
+      <label for="username">Username</label>
+      <input
+        type="text"
+        id="username"
+        name="username"
+        [(ngModel)]="username"
+        required
+        class="form-control"
+      />
+    </div>
+    <div class="form-group">
+      <label for="password">Password</label>
+      <input
+        type="password"
+        id="password"
+        name="password"
+        [(ngModel)]="password"
+        required
+        class="form-control"
+      />
+    </div>
+    <button type="submit" [disabled]="loginForm.invalid">Login</button>
+    <p class="error" *ngIf="errorMessage">{{ errorMessage }}</p>
+  </form>
+</div> 

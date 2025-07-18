@@ -1,9 +1,42 @@
 .header {
-  background: #4caf50;
+  background: #1a4676;
   color: #fff;
   padding: 1rem;
-  text-align: center;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
   font-size: 2rem;
   letter-spacing: 2px;
   border-radius: 0 0 10px 10px;
+}
+
+.title {
+  flex: 1;
+  text-align: center;
+  margin: 0;
+}
+
+.user-actions {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 1rem;
+}
+
+.logout-btn, .logout-btn:hover {
+  all: unset;
+}
+
+.link-btn {
+  background: none;
+  border: none;
+  color: #fff;
+  text-decoration: underline;
+  cursor: pointer;
+  padding: 0;
+  font: inherit;
+}
+
+.link-btn:hover {
+  text-decoration: none;
 }

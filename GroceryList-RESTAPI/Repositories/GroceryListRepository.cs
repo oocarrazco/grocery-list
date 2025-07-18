@@ -39,7 +39,7 @@ namespace GroceryListApi.Repositories
         public async Task<GroceryList> AddAsync(GroceryList list)
         {
             _logger.LogInformation("AddAsync called");
-        var newList = new GroceryList { Name = list.Name };
+        var newList = new GroceryList { Name = list.Name, UserId = list.UserId > 0 ? list.UserId : 1 };
             _context.GroceryLists.Add(newList);
             await _context.SaveChangesAsync();
             _logger.LogInformation("GroceryList added with id={Id}", newList.Id);
