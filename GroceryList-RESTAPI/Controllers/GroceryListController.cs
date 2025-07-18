@@ -5,6 +5,9 @@ using GroceryListApi.DTOs;
 
 namespace GroceryListApi.Controllers
 {
+    /// <summary>
+    /// REST endpoints for managing grocery lists (CRUD).
+    /// </summary>
     [ApiController]
     [Route("api/[controller]")]
     public class GroceryListController : ControllerBase
@@ -18,6 +21,10 @@ namespace GroceryListApi.Controllers
         }
 
 
+        /// <summary>
+        /// Returns all grocery lists for the given user or every list when userId is null.
+        /// </summary>
+        /// <param name="userId">Optional user identifier to filter lists.</param>
         [HttpGet]
         public async Task<ActionResult<List<GroceryListDto>>> GetAll([FromQuery] int? userId)
         {
@@ -28,6 +35,9 @@ namespace GroceryListApi.Controllers
         }
 
 
+        /// <summary>
+        /// Returns a single grocery list by id.
+        /// </summary>
         [HttpGet("{id}")]
         public async Task<ActionResult<GroceryListDto>> GetById(int id)
         {
@@ -42,6 +52,9 @@ namespace GroceryListApi.Controllers
         }
 
 
+        /// <summary>
+        /// Creates a new grocery list.
+        /// </summary>
         [HttpPost]
         public async Task<ActionResult<GroceryListDto>> Create([FromBody] GroceryListCreateDto dto)
         {
@@ -52,6 +65,9 @@ namespace GroceryListApi.Controllers
         }
 
 
+        /// <summary>
+        /// Updates an existing grocery list.
+        /// </summary>
         [HttpPut("{id}")]
         public async Task<ActionResult<GroceryListDto>> Update(int id, [FromBody] GroceryListUpdateDto dto)
         {
@@ -65,6 +81,9 @@ namespace GroceryListApi.Controllers
             return Ok(updated);
         }
 
+        /// <summary>
+        /// Deletes a grocery list by id.
+        /// </summary>
         [HttpDelete("{id}")]
         public async Task<ActionResult> Delete(int id)
         {

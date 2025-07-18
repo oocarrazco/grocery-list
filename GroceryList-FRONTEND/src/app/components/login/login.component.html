@@ -27,7 +27,8 @@
       />
     </div>
     <button type="submit" [disabled]="loginForm.invalid">{{ isRegisterMode ? 'Register' : 'Login' }}</button>
-    <p [ngClass]="isSuccess ? 'success' : 'error'" *ngIf="errorMessage">{{ errorMessage }}</p>
+    <p class="success" *ngIf="feedbackMessage">{{ feedbackMessage }}</p>
+    <p class="error" *ngIf="errorMessage">{{ errorMessage }}</p>
     <p class="toggle">
       <a href="#" (click)="toggleMode(); $event.preventDefault();">
         {{ isRegisterMode ? 'Back to Login' : 'New user? Register here' }}

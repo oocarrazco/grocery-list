@@ -40,7 +40,7 @@ Angular (version 19.1.0)
 
 2. Start all services:
    ```bash
-   docker-compose up --build
+   docker-compose up
    ```
 
 3. Access the application:
@@ -48,6 +48,7 @@ Angular (version 19.1.0)
    - **API**: http://localhost:5003
    - **API Documentation**: http://localhost:5003/swagger
    - **SQL Server**: localhost:1433 (sa/YourStrong!Passw0rd)
+   - **Default application credentials**: admin / admin (seeded automatically)
 
    
 ## Features

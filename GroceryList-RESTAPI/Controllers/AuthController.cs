@@ -6,6 +6,9 @@ using Microsoft.EntityFrameworkCore;
 
 namespace GroceryListApi.Controllers
 {
+    /// <summary>
+    /// Handles user authentication and registration.
+    /// </summary>
     [ApiController]
     [Route("api/[controller]")]
     public class AuthController : ControllerBase
@@ -19,6 +22,10 @@ namespace GroceryListApi.Controllers
             _logger = logger;
         }
 
+        /// <summary>
+        /// Logs a user in with username and password.
+        /// Returns 200 with userId when credentials are valid; otherwise 401.
+        /// </summary>
         [HttpPost("login")]
         public async Task<ActionResult<LoginResponseDto>> Login([FromBody] LoginRequestDto loginDto)
         {
@@ -28,20 +35,23 @@ namespace GroceryListApi.Controllers
             if (user == null)
             {
                 _logger.LogWarning("User {Username} not found", loginDto.Username);
-                return Unauthorized(new LoginResponseDto { Success = false, Message = "Invalid credentials" });
+                return Unauthorized(new { message = "Invalid credentials" });
             }
 
             bool passwordValid = BCrypt.Net.BCrypt.Verify(loginDto.Password, user.PasswordHash);
             if (!passwordValid)
             {
                 _logger.LogWarning("Invalid password for user {Username}", loginDto.Username);
-                return Unauthorized(new LoginResponseDto { Success = false, Message = "Invalid credentials" });
+                return Unauthorized(new { message = "Invalid credentials" });
             }
 
             _logger.LogInformation("User {Username} logged in successfully", loginDto.Username);
-            return Ok(new LoginResponseDto { Success = true, Message = "Login successful", UserId = user.Id });
+            return Ok(new LoginResponseDto { Message = "Login successful", UserId = user.Id });
         }
 
+        /// <summary>
+        /// Registers a new user. Returns 409 when the username already exists.
+        /// </summary>
         [HttpPost("register")]
         public async Task<ActionResult<LoginResponseDto>> Register([FromBody] LoginRequestDto registerDto)
         {
@@ -50,7 +60,7 @@ namespace GroceryListApi.Controllers
             if (await _context.Users.AnyAsync(u => u.Username == registerDto.Username))
             {
                 _logger.LogWarning("Username {Username} already exists", registerDto.Username);
-                return Conflict(new LoginResponseDto { Success = false, Message = "Username already exists" });
+                return Conflict(new { message = "Username already exists" });
             }
 
             var hashed = BCrypt.Net.BCrypt.HashPassword(registerDto.Password);
@@ -59,7 +69,7 @@ namespace GroceryListApi.Controllers
             await _context.SaveChangesAsync();
             _logger.LogInformation("User {Username} registered successfully", registerDto.Username);
 
-            return Ok(new LoginResponseDto { Success = true, Message = "Registration successful", UserId = newUser.Id });
+            return Ok(new LoginResponseDto { Message = "Registration successful", UserId = newUser.Id });
         }
     }
 } 

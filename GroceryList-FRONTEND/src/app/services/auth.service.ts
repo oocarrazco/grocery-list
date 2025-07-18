@@ -4,7 +4,6 @@ import { Observable, tap, BehaviorSubject } from 'rxjs';
 import { environment } from '../../environments/environment';
 
 interface LoginResponse {
-  success: boolean;
   message?: string;
   userId?: number;
 }
@@ -21,25 +20,29 @@ export class AuthService {
 
   constructor(private http: HttpClient) {}
 
+  /**
+   * Logs the user in, persists auth state to localStorage and emits via BehaviorSubject.
+   */
   login(username: string, password: string): Observable<LoginResponse> {
     return this.http.post<LoginResponse>(this.loginUrl, { username, password }).pipe(
       tap((res) => {
-        if (res.success) {
-          localStorage.setItem(this.storageKey, 'true');
-          localStorage.setItem(this.usernameKey, username);
-          if (res.userId) {
-            localStorage.setItem('gl_userId', res.userId.toString());
-          }
-          this.loggedInSubject.next(true);
+        // Login successful
+        localStorage.setItem(this.storageKey, 'true');
+        localStorage.setItem(this.usernameKey, username);
+        if (res.userId) {
+          localStorage.setItem('gl_userId', res.userId.toString());
         }
+        this.loggedInSubject.next(true);
       })
     );
   }
 
+  /** Registers a new user account. */
   register(username: string, password: string): Observable<LoginResponse> {
     return this.http.post<LoginResponse>(`${environment.apiUrl}/api/Auth/register`, { username, password });
   }
 
+  /** Clears local storage and emits logged-out state. */
   logout(): void {
     localStorage.removeItem(this.storageKey);
     localStorage.removeItem(this.usernameKey);
@@ -47,6 +50,7 @@ export class AuthService {
     this.loggedInSubject.next(false);
   }
 
+  /** Returns true when the user has an auth flag in localStorage. */
   isLoggedIn(): boolean {
     return localStorage.getItem(this.storageKey) === 'true';
   }

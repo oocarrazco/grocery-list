@@ -1,6 +1,6 @@
 
 
-import { Component, OnInit, Output, EventEmitter } from '@angular/core';
+import { Component, OnInit, Output, EventEmitter, DestroyRef, inject } from '@angular/core';
 import { GroceryListService } from '../../services/grocery-list.service';
 import { ItemService } from '../../services/item.service';
 import { GroceryList } from '../../models/grocery-list.model';
@@ -11,7 +11,11 @@ import { AddItemComponent } from '../item/add-item/add-item.component';
 import { ItemListComponent } from '../item/item-list/item-list.component';
 import { LoggingService } from '../../services/logging.service';
 import { ConfirmationService } from '../../services/confirmation.service';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 
+/**
+ * UI component that handles creation, editing, deletion and item management for grocery lists.
+ */
 @Component({
   selector: 'app-grocery-list-manager',
   templateUrl: './grocery-list-manager.component.html',
@@ -36,6 +40,9 @@ export class GroceryListManagerComponent implements OnInit {
     private confirmationService: ConfirmationService
   ) {}
 
+  // Angular destroy ref for automatic unsubscribe
+  private readonly destroyRef = inject(DestroyRef);
+
   ngOnInit() {
     this.loggingService.log('GroceryListManagerComponent initialized');
     this.loadLists();
@@ -43,7 +50,7 @@ export class GroceryListManagerComponent implements OnInit {
 
   loadLists() {
     this.loggingService.log('Loading grocery lists');
-    this.groceryListService.getGroceryLists().subscribe({
+    this.groceryListService.getGroceryLists().pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
       next: lists => {
         this.loggingService.log('Grocery lists loaded', lists);
         this.groceryLists = lists;
@@ -66,7 +73,7 @@ export class GroceryListManagerComponent implements OnInit {
     if (!this.listName.trim()) return;
     if (this.isEditing && this.selectedList) {
       // Only update the name
-      this.groceryListService.renameGroceryList(this.selectedList.id, this.listName).subscribe({
+      this.groceryListService.renameGroceryList(this.selectedList.id, this.listName).pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
         next: () => {
           this.loadLists();
           this.cancelEdit();
@@ -74,7 +81,7 @@ export class GroceryListManagerComponent implements OnInit {
         error: () => this.error = 'Failed to rename list.'
       });
     } else {
-      this.groceryListService.addGroceryList(this.listName).subscribe({
+      this.groceryListService.addGroceryList(this.listName).pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
         next: () => {
           this.loadLists();
           this.listName = '';
@@ -93,7 +100,7 @@ export class GroceryListManagerComponent implements OnInit {
   deleteList(list: GroceryList) {
     this.confirmationService.confirm(`Delete list "${list.name}"?`).then(accepted => {
       if (accepted) {
-        this.groceryListService.deleteGroceryList(list.id).subscribe({
+        this.groceryListService.deleteGroceryList(list.id).pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
           next: () => {
             // If the deleted list is currently selected, clear the selection so dependent views update.
             if (this.selectedList?.id === list.id) {
@@ -127,7 +134,7 @@ export class GroceryListManagerComponent implements OnInit {
       isPurchased: !!newItem.isPurchased,
       groceryListId: this.selectedList.id
     };
-    this.itemService.addGroceryItem({ item: itemToAdd }).subscribe({
+    this.itemService.addGroceryItem({ item: itemToAdd }).pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
       next: (createdItem) => {
         this.loggingService.log('Backend returned new item:', createdItem);
         this.selectedList!.items.push(createdItem);
@@ -159,11 +166,11 @@ export class GroceryListManagerComponent implements OnInit {
         // Do not set createdAt when editing
       }
     };
-    this.itemService.updateGroceryItem(updatePayload).subscribe({
+    this.itemService.updateGroceryItem(updatePayload).pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
       next: (updatedItem) => {
         this.loggingService.log('Backend returned updated item:', updatedItem);
         // Reload lists and re-select the current list to update the view
-        this.groceryListService.getGroceryLists().subscribe({
+        this.groceryListService.getGroceryLists().pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
           next: lists => {
             this.groceryLists = lists;
             // Re-select the current list by ID
@@ -189,15 +196,13 @@ export class GroceryListManagerComponent implements OnInit {
     });
   }
 
-  // ...existing code...
-
   deleteItem(itemId: number) {
     if (!this.selectedList) return;
     const item = this.selectedList.items.find(i => i.id === itemId);
     if (!item) return;
     this.confirmationService.confirm(`Delete item "${item.name}"?`).then(accepted => {
       if (accepted) {
-        this.itemService.deleteGroceryItem({ id: itemId }).subscribe({
+        this.itemService.deleteGroceryItem({ id: itemId }).pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
           next: () => {
             // Remove item from selectedList.items
             this.selectedList!.items = this.selectedList!.items.filter(i => i.id !== itemId);
@@ -214,7 +219,7 @@ export class GroceryListManagerComponent implements OnInit {
     const idx = this.selectedList.items.findIndex(i => i.id === item.id);
     if (idx === -1) return;
     const newStatus = !item.isPurchased;
-    this.itemService.togglePurchaseStatus({ id: item.id, isPurchased: newStatus }).subscribe({
+    this.itemService.togglePurchaseStatus({ id: item.id, isPurchased: newStatus }).pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
       next: updatedItem => {
         // Only update isPurchased and updatedAt, preserve other fields. Fallback to original updatedAt if missing.
         this.selectedList!.items[idx] = {

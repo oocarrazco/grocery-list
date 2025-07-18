@@ -1,18 +1,1 @@
-<h2 class="p-3 border-bottom text-center" style="color: #1a3c6e;">Dashboard</h2>
-
-<!-- Grocery Lists Table -->
-<div class="bg-white rounded shadow mb-4">
-  <div class="p-4 border-bottom fw-bold text-center d-flex flex-wrap">
-    <div class="flex-grow-1 text-start">List Name</div>
-    <div class="w-25"># Items</div>
-  </div>
-  <div *ngFor="let list of groceryLists" class="p-4 border-bottom last:border-bottom-0 text-center d-flex flex-wrap align-items-center">
-    <div class="flex-grow-1 text-start">{{ list.name }}</div>
-    <div class="w-25">{{ list.items.length }}</div>
-  </div>
-  <div *ngIf="groceryLists.length === 0" class="p-4 text-center text-muted">
-    No lists found. Create your first grocery list!
-  </div>
-</div>
-
-<app-grocery-list-manager (listChanged)="loadLists()"></app-grocery-list-manager> 
+<app-grocery-list-manager></app-grocery-list-manager> 

@@ -1,9 +1,13 @@
-import { Component, EventEmitter, Output } from '@angular/core';
+import { Component, EventEmitter, Output, DestroyRef, inject } from '@angular/core';
 import { Router } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { AuthService } from '../../services/auth.service';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 
+/**
+ *  login / registration form. Handles auth flow and routing after login.
+ */
 @Component({
   selector: 'app-login',
   standalone: true,
@@ -15,26 +19,24 @@ export class LoginComponent {
   username = '';
   password = '';
   errorMessage = '';
-  isSuccess = false;
+  feedbackMessage = '';
+  isSuccess = false; // for registration success
   isRegisterMode = false;
   @Output() loggedIn = new EventEmitter<void>();
 
   constructor(private authService: AuthService, private router: Router) {}
 
+  private readonly destroyRef = inject(DestroyRef);
+
   onSubmit(): void {
     this.errorMessage = '';
     if (this.isRegisterMode) {
-      this.authService.register(this.username, this.password).subscribe({
-        next: (res) => {
-          if (!res.success) {
-            this.errorMessage = res.message ?? 'Registration failed';
-            this.isSuccess = false;
-          } else {
-            // Switch to login mode after success
-            this.isRegisterMode = false;
-            this.errorMessage = 'Registration successful. Please log in.';
-            this.isSuccess = true;
-          }
+      this.authService.register(this.username, this.password).pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
+        next: () => {
+          // Registration successful
+          this.isRegisterMode = false;
+          this.feedbackMessage = 'Registration successful. Please log in.';
+          this.isSuccess = true;
         },
         error: (err) => {
           this.errorMessage = err.error?.message || 'Registration failed';
@@ -42,17 +44,12 @@ export class LoginComponent {
         }
       });
     } else {
-      this.authService.login(this.username, this.password).subscribe({
-        next: (res) => {
-          if (!res.success) {
-            this.errorMessage = res.message ?? 'Login failed';
-            this.isSuccess = false;
-          } else {
-            // Notify parent (kept for backward compatibility)
-            this.loggedIn.emit();
-            // Navigate to lists dashboard
-            this.router.navigate(['/dashboard']);
-          }
+      this.authService.login(this.username, this.password).pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
+        next: () => {
+          // Notify parent if needed
+          this.loggedIn.emit();
+          // Navigate to dashboard
+          this.router.navigate(['/dashboard']);
         },
         error: () => {
           this.errorMessage = 'Invalid credentials';
