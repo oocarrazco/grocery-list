@@ -47,6 +47,15 @@ export class GroceryListManagerComponent implements OnInit {
       next: lists => {
         this.loggingService.log('Grocery lists loaded', lists);
         this.groceryLists = lists;
+        // If the currently selected list no longer exists (e.g. it was deleted), clear the selection so the UI hides the item panel.
+        if (this.selectedList) {
+          const stillExists = lists.some(l => l.id === this.selectedList!.id);
+          if (!stillExists) {
+            this.selectedList = null;
+            this.itemEditMode = false;
+            this.itemToEdit = null;
+          }
+        }
         this.listChanged.emit();
       },
       error: () => this.error = 'Failed to load lists.'
@@ -85,7 +94,16 @@ export class GroceryListManagerComponent implements OnInit {
     this.confirmationService.confirm(`Delete list "${list.name}"?`).then(accepted => {
       if (accepted) {
         this.groceryListService.deleteGroceryList(list.id).subscribe({
-          next: () => this.loadLists(),
+          next: () => {
+            // If the deleted list is currently selected, clear the selection so dependent views update.
+            if (this.selectedList?.id === list.id) {
+              this.selectedList = null;
+              this.itemEditMode = false;
+              this.itemToEdit = null;
+            }
+            // Reload lists after updating selection
+            this.loadLists();
+          },
           error: () => this.error = 'Failed to delete list.'
         });
       }

@@ -1,4 +1,5 @@
 import { Component, EventEmitter, Output } from '@angular/core';
+import { Router } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { AuthService } from '../../services/auth.service';
@@ -18,7 +19,7 @@ export class LoginComponent {
   isRegisterMode = false;
   @Output() loggedIn = new EventEmitter<void>();
 
-  constructor(private authService: AuthService) {}
+  constructor(private authService: AuthService, private router: Router) {}
 
   onSubmit(): void {
     this.errorMessage = '';
@@ -47,7 +48,10 @@ export class LoginComponent {
             this.errorMessage = res.message ?? 'Login failed';
             this.isSuccess = false;
           } else {
+            // Notify parent (kept for backward compatibility)
             this.loggedIn.emit();
+            // Navigate to lists dashboard
+            this.router.navigate(['/dashboard']);
           }
         },
         error: () => {
