@@ -21,7 +21,7 @@ namespace GroceryListApi.Services
             return items;
         }
 
-        public async Task<Item> GetItemById(int id)
+        public async Task<Item?> GetItemById(int id)
         {
             _logger.LogInformation("GetItemById called with id={Id}", id);
             var item = await _context.Items.FindAsync(id);
