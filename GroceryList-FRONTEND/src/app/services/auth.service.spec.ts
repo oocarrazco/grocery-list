@@ -24,9 +24,9 @@ describe('AuthService', () => {
   });
 
   it('should store login flags and userId on successful login', () => {
-    service.login('bob', 'pass').subscribe(r => expect(r.success).toBeTrue());
+    service.login('bob', 'pass').subscribe(r => expect(r.userId).toBe(3));
     const req = http.expectOne(r => r.method === 'POST' && r.url.endsWith('/api/Auth/login'));
-    req.flush({ success: true, userId: 3 });
+    req.flush({ userId: 3 });
 
     expect(localStorage.getItem('gl_logged_in')).toBe('true');
     expect(localStorage.getItem('gl_username')).toBe('bob');
