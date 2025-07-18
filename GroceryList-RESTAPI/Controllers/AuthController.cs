@@ -28,18 +28,18 @@ namespace GroceryListApi.Controllers
             if (user == null)
             {
                 _logger.LogWarning("User {Username} not found", loginDto.Username);
-                return Unauthorized(new LoginResponseDto { Success = false, Message = "Invalid credentials" });
+                return Unauthorized(new { message = "Invalid credentials" });
             }
 
             bool passwordValid = BCrypt.Net.BCrypt.Verify(loginDto.Password, user.PasswordHash);
             if (!passwordValid)
             {
                 _logger.LogWarning("Invalid password for user {Username}", loginDto.Username);
-                return Unauthorized(new LoginResponseDto { Success = false, Message = "Invalid credentials" });
+                return Unauthorized(new { message = "Invalid credentials" });
             }
 
             _logger.LogInformation("User {Username} logged in successfully", loginDto.Username);
-            return Ok(new LoginResponseDto { Success = true, Message = "Login successful", UserId = user.Id });
+            return Ok(new LoginResponseDto { Message = "Login successful", UserId = user.Id });
         }
 
         [HttpPost("register")]
@@ -50,7 +50,7 @@ namespace GroceryListApi.Controllers
             if (await _context.Users.AnyAsync(u => u.Username == registerDto.Username))
             {
                 _logger.LogWarning("Username {Username} already exists", registerDto.Username);
-                return Conflict(new LoginResponseDto { Success = false, Message = "Username already exists" });
+                return Conflict(new { message = "Username already exists" });
             }
 
             var hashed = BCrypt.Net.BCrypt.HashPassword(registerDto.Password);
@@ -59,7 +59,7 @@ namespace GroceryListApi.Controllers
             await _context.SaveChangesAsync();
             _logger.LogInformation("User {Username} registered successfully", registerDto.Username);
 
-            return Ok(new LoginResponseDto { Success = true, Message = "Registration successful", UserId = newUser.Id });
+            return Ok(new LoginResponseDto { Message = "Registration successful", UserId = newUser.Id });
         }
     }
 } 

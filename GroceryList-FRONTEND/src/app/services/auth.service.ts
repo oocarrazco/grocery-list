@@ -4,7 +4,6 @@ import { Observable, tap, BehaviorSubject } from 'rxjs';
 import { environment } from '../../environments/environment';
 
 interface LoginResponse {
-  success: boolean;
   message?: string;
   userId?: number;
 }
@@ -24,14 +23,13 @@ export class AuthService {
   login(username: string, password: string): Observable<LoginResponse> {
     return this.http.post<LoginResponse>(this.loginUrl, { username, password }).pipe(
       tap((res) => {
-        if (res.success) {
-          localStorage.setItem(this.storageKey, 'true');
-          localStorage.setItem(this.usernameKey, username);
-          if (res.userId) {
-            localStorage.setItem('gl_userId', res.userId.toString());
-          }
-          this.loggedInSubject.next(true);
+        // Login successful
+        localStorage.setItem(this.storageKey, 'true');
+        localStorage.setItem(this.usernameKey, username);
+        if (res.userId) {
+          localStorage.setItem('gl_userId', res.userId.toString());
         }
+        this.loggedInSubject.next(true);
       })
     );
   }

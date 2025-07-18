@@ -7,13 +7,13 @@ import { GroceryList } from './models/grocery-list.model';
 
 import { ConfirmationService, ConfirmationRequest } from './services/confirmation.service';
 import { ConfirmDialogComponent } from './components/confirm-dialog/confirm-dialog.component';
-import { Component, OnInit, OnDestroy } from '@angular/core';
+import { Component, OnInit, DestroyRef, inject } from '@angular/core';
 import { HeaderComponent } from './components/header/header.component';
 import { FooterComponent } from './components/footer/footer.component';
 import { ItemDetailComponent } from './components/item/item-detail/item-detail.component';
 import { AuthService } from './services/auth.service';
 import { RouterModule } from '@angular/router';
-import { Subject, takeUntil } from 'rxjs';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 
 @Component({
   selector: 'app-grocery-list',
@@ -29,13 +29,13 @@ import { Subject, takeUntil } from 'rxjs';
   templateUrl: './app.component.html',
   styleUrls: ['./app.component.css']
 })
-export class GroceryListComponent implements OnInit, OnDestroy {
+export class GroceryListComponent implements OnInit {
   groceryLists: GroceryList[] = [];
 
   // Confirmation dialog state
   confirmMessage: string | null = null;
   private confirmResolve?: (value: boolean) => void;
-  private destroy$ = new Subject<void>();
+  private readonly destroyRef = inject(DestroyRef);
 
   constructor(
     private groceryListService: GroceryListService,
@@ -46,7 +46,7 @@ export class GroceryListComponent implements OnInit, OnDestroy {
   ngOnInit(): void {
     // Subscribe to confirmation requests
     this.confirmationService.requests$
-      .pipe(takeUntil(this.destroy$))
+      .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe((req: ConfirmationRequest) => {
         this.confirmMessage = req.message;
         this.confirmResolve = req.resolve;
@@ -57,10 +57,7 @@ export class GroceryListComponent implements OnInit, OnDestroy {
     }
   }
 
-  ngOnDestroy(): void {
-    this.destroy$.next();
-    this.destroy$.complete();
-  }
+  // No manual ngOnDestroy needed; takeUntilDestroyed handles cleanup
 
   loadGroceryLists(): void {
     this.groceryListService.getGroceryLists().subscribe({
