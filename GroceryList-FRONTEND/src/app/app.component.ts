@@ -7,13 +7,13 @@ import { GroceryList } from './models/grocery-list.model';
 
 import { ConfirmationService, ConfirmationRequest } from './services/confirmation.service';
 import { ConfirmDialogComponent } from './components/confirm-dialog/confirm-dialog.component';
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { HeaderComponent } from './components/header/header.component';
 import { FooterComponent } from './components/footer/footer.component';
 import { ItemDetailComponent } from './components/item/item-detail/item-detail.component';
-import { GroceryListManagerComponent } from './components/grocery-list-manager/grocery-list-manager.component';
 import { AuthService } from './services/auth.service';
-import { LoginComponent } from './components/login/login.component';
+import { RouterModule } from '@angular/router';
+import { Subject, takeUntil } from 'rxjs';
 
 @Component({
   selector: 'app-grocery-list',
@@ -23,19 +23,19 @@ import { LoginComponent } from './components/login/login.component';
     FormsModule,
     HeaderComponent,
     FooterComponent,
-    GroceryListManagerComponent,
-    LoginComponent,
+    RouterModule,
     ConfirmDialogComponent
   ],
   templateUrl: './app.component.html',
   styleUrls: ['./app.component.css']
 })
-export class GroceryListComponent implements OnInit {
+export class GroceryListComponent implements OnInit, OnDestroy {
   groceryLists: GroceryList[] = [];
 
   // Confirmation dialog state
   confirmMessage: string | null = null;
   private confirmResolve?: (value: boolean) => void;
+  private destroy$ = new Subject<void>();
 
   constructor(
     private groceryListService: GroceryListService,
@@ -45,14 +45,21 @@ export class GroceryListComponent implements OnInit {
 
   ngOnInit(): void {
     // Subscribe to confirmation requests
-    this.confirmationService.requests$.subscribe((req: ConfirmationRequest) => {
-      this.confirmMessage = req.message;
-      this.confirmResolve = req.resolve;
-    });
+    this.confirmationService.requests$
+      .pipe(takeUntil(this.destroy$))
+      .subscribe((req: ConfirmationRequest) => {
+        this.confirmMessage = req.message;
+        this.confirmResolve = req.resolve;
+      });
 
     if (this.authService.isLoggedIn()) {
       this.loadGroceryLists();
     }
+  }
+
+  ngOnDestroy(): void {
+    this.destroy$.next();
+    this.destroy$.complete();
   }
 
   loadGroceryLists(): void {

@@ -17,6 +17,8 @@ This repository contains a full-stack grocery list application with separate fro
 Node.js & npm (for frontend development)
 Angular (version 19.1.0)
 .NET 6/8 SDK (for backend development)
+- Docker
+- Docker Compose
 
 ### Development
 - **Frontend**: Navigate to `GroceryList-FRONTEND/` and run:
@@ -28,10 +30,29 @@ Angular (version 19.1.0)
   dotnet run --project GroceryListApi.csproj
   ```
 
+### Running the Application
+
+1. Clone the repository:
+   ```bash
+   git clone https://github.com/oocarrazco/grocery-list.git
+   cd GroceryList
+   ```
+
+2. Start all services:
+   ```bash
+   docker-compose up --build
+   ```
+
+3. Access the application:
+   - **Frontend**: http://localhost:4200
+   - **API**: http://localhost:5003
+   - **API Documentation**: http://localhost:5003/swagger
+   - **SQL Server**: localhost:1433 (sa/YourStrong!Passw0rd)
+
+   
 ## Features
+- Login and Reister User
 - Create, update, and delete grocery lists and items
 - Mark items as purchased
 - Responsive UI with Angular
 - RESTful API with ASP.NET Core
-
-
