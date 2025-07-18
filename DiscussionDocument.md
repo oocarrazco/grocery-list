@@ -2,8 +2,11 @@
 
 ## Potential Improvements
 
-1. Inform the biller when the application is offline
+1. Inform the customer when the application is offline
 2. Add token-based authentication
+3. Migrate UI forms to Angular Reactive Forms
+4. Add Internationalization (i18n) support to localize UI strings and date/number formats
+5. Add REST API versioning in the URI
 
 ---
 
