@@ -25,7 +25,7 @@
 
 1. Cloud-Native Architecture
 2. Centralized logging (ELK), and automated alerting (OpsGenie/Prometheus/Grafana)
-
+3. Add indexes to the most-queried columns and use read-only replicas for faster data reads
 ---
 
 ## Additional Points
