@@ -14,23 +14,53 @@ export class LoginComponent {
   username = '';
   password = '';
   errorMessage = '';
+  isSuccess = false;
+  isRegisterMode = false;
   @Output() loggedIn = new EventEmitter<void>();
 
   constructor(private authService: AuthService) {}
 
   onSubmit(): void {
     this.errorMessage = '';
-    this.authService.login(this.username, this.password).subscribe({
-      next: (res) => {
-        if (!res.success) {
-          this.errorMessage = res.message ?? 'Login failed';
-        } else {
-          this.loggedIn.emit();
+    if (this.isRegisterMode) {
+      this.authService.register(this.username, this.password).subscribe({
+        next: (res) => {
+          if (!res.success) {
+            this.errorMessage = res.message ?? 'Registration failed';
+            this.isSuccess = false;
+          } else {
+            // Switch to login mode after success
+            this.isRegisterMode = false;
+            this.errorMessage = 'Registration successful. Please log in.';
+            this.isSuccess = true;
+          }
+        },
+        error: (err) => {
+          this.errorMessage = err.error?.message || 'Registration failed';
+          this.isSuccess = false;
         }
-      },
-      error: () => {
-        this.errorMessage = 'Invalid credentials';
-      }
-    });
+      });
+    } else {
+      this.authService.login(this.username, this.password).subscribe({
+        next: (res) => {
+          if (!res.success) {
+            this.errorMessage = res.message ?? 'Login failed';
+            this.isSuccess = false;
+          } else {
+            this.loggedIn.emit();
+          }
+        },
+        error: () => {
+          this.errorMessage = 'Invalid credentials';
+          this.isSuccess = false;
+        }
+      });
+    }
+  }
+
+  toggleMode(): void {
+    this.isRegisterMode = !this.isRegisterMode;
+    this.errorMessage = '';
+    this.isSuccess = false;
   }
 } 

@@ -1,6 +1,7 @@
 <div class="login-container">
   <img src="assets/login-icon.png" alt="Grocery List" class="login-image" />
-  <h2>Welcome to the grocery List App</h2>
+  <h2 *ngIf="!isRegisterMode">Welcome to the grocery List App</h2>
+  <h2 *ngIf="isRegisterMode">Register a new account</h2>
 
   <form (ngSubmit)="onSubmit()" #loginForm="ngForm" class="login-form">
     <div class="form-group">
@@ -25,7 +26,12 @@
         class="form-control"
       />
     </div>
-    <button type="submit" [disabled]="loginForm.invalid">Login</button>
-    <p class="error" *ngIf="errorMessage">{{ errorMessage }}</p>
+    <button type="submit" [disabled]="loginForm.invalid">{{ isRegisterMode ? 'Register' : 'Login' }}</button>
+    <p [ngClass]="isSuccess ? 'success' : 'error'" *ngIf="errorMessage">{{ errorMessage }}</p>
+    <p class="toggle">
+      <a href="#" (click)="toggleMode(); $event.preventDefault();">
+        {{ isRegisterMode ? 'Back to Login' : 'New user? Register here' }}
+      </a>
+    </p>
   </form>
 </div> 

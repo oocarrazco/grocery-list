@@ -19,10 +19,10 @@ namespace GroceryListApi.Controllers
 
 
         [HttpGet]
-        public async Task<ActionResult<List<GroceryListDto>>> GetAll()
+        public async Task<ActionResult<List<GroceryListDto>>> GetAll([FromQuery] int? userId)
         {
-            _logger.LogInformation("GetAll called");
-            var lists = await _service.GetAllLists();
+            _logger.LogInformation("GetAll called with userId={UserId}", userId);
+            var lists = await _service.GetAllLists(userId);
             _logger.LogInformation("GetAll returned {Count} lists", lists.Count);
             return Ok(lists);
         }

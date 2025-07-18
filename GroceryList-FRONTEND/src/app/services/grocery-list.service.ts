@@ -6,6 +6,7 @@ import { Observable } from 'rxjs';
 import { HttpClient } from '@angular/common/http';
 import { LoggingService } from './logging.service';
 import { environment } from '../../environments/environment';
+import { AuthService } from './auth.service';
 
 @Injectable({
   providedIn: 'root'
@@ -13,16 +14,19 @@ import { environment } from '../../environments/environment';
 export class GroceryListService {
   private apiUrl = `${environment.apiUrl}/api/GroceryList`;
 
-  constructor(private http: HttpClient, private loggingService: LoggingService) {}
+  constructor(private http: HttpClient, private loggingService: LoggingService, private authService: AuthService) {}
 
   getGroceryLists(): Observable<GroceryList[]> {
     this.loggingService.log('Fetching grocery lists');
-    return this.http.get<GroceryList[]>(this.apiUrl);
+    const params: any = {};
+    const uid = this.authService.userId;
+    if (uid) params.userId = uid;
+    return this.http.get<GroceryList[]>(this.apiUrl, { params });
   }
 
   addGroceryList(name: string): Observable<GroceryList> {
     this.loggingService.log('Adding grocery list', name);
-    return this.http.post<GroceryList>(this.apiUrl, { name });
+    return this.http.post<GroceryList>(this.apiUrl, { name, userId: this.authService.userId });
   }
 
   renameGroceryList(id: number, newName: string, items: any[] = []): Observable<GroceryList> {

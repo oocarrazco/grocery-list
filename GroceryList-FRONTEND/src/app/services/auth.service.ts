@@ -6,6 +6,7 @@ import { environment } from '../../environments/environment';
 interface LoginResponse {
   success: boolean;
   message?: string;
+  userId?: number;
 }
 
 @Injectable({
@@ -26,15 +27,23 @@ export class AuthService {
         if (res.success) {
           localStorage.setItem(this.storageKey, 'true');
           localStorage.setItem(this.usernameKey, username);
+          if (res.userId) {
+            localStorage.setItem('gl_userId', res.userId.toString());
+          }
           this.loggedInSubject.next(true);
         }
       })
     );
   }
 
+  register(username: string, password: string): Observable<LoginResponse> {
+    return this.http.post<LoginResponse>(`${environment.apiUrl}/api/Auth/register`, { username, password });
+  }
+
   logout(): void {
     localStorage.removeItem(this.storageKey);
     localStorage.removeItem(this.usernameKey);
+    localStorage.removeItem('gl_userId');
     this.loggedInSubject.next(false);
   }
 
@@ -44,5 +53,10 @@ export class AuthService {
 
   get currentUser(): string | null {
     return localStorage.getItem(this.usernameKey);
+  }
+
+  get userId(): number | null {
+    const val = localStorage.getItem('gl_userId');
+    return val ? Number(val) : null;
   }
 } 
