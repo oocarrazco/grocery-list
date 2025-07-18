@@ -10,6 +10,7 @@ import { FormsModule } from '@angular/forms';
 import { AddItemComponent } from '../item/add-item/add-item.component';
 import { ItemListComponent } from '../item/item-list/item-list.component';
 import { LoggingService } from '../../services/logging.service';
+import { ConfirmationService } from '../../services/confirmation.service';
 
 @Component({
   selector: 'app-grocery-list-manager',
@@ -31,7 +32,8 @@ export class GroceryListManagerComponent implements OnInit {
   constructor(
     private groceryListService: GroceryListService,
     private itemService: ItemService,
-    private loggingService: LoggingService
+    private loggingService: LoggingService,
+    private confirmationService: ConfirmationService
   ) {}
 
   ngOnInit() {
@@ -80,12 +82,14 @@ export class GroceryListManagerComponent implements OnInit {
   }
 
   deleteList(list: GroceryList) {
-    if (confirm(`Delete list "${list.name}"?`)) {
-      this.groceryListService.deleteGroceryList(list.id).subscribe({
-        next: () => this.loadLists(),
-        error: () => this.error = 'Failed to delete list.'
-      });
-    }
+    this.confirmationService.confirm(`Delete list "${list.name}"?`).then(accepted => {
+      if (accepted) {
+        this.groceryListService.deleteGroceryList(list.id).subscribe({
+          next: () => this.loadLists(),
+          error: () => this.error = 'Failed to delete list.'
+        });
+      }
+    });
   }
 
 
@@ -173,16 +177,18 @@ export class GroceryListManagerComponent implements OnInit {
     if (!this.selectedList) return;
     const item = this.selectedList.items.find(i => i.id === itemId);
     if (!item) return;
-    if (confirm(`Delete item "${item.name}"?`)) {
-      this.itemService.deleteGroceryItem({ id: itemId }).subscribe({
-        next: () => {
-          // Remove item from selectedList.items
-          this.selectedList!.items = this.selectedList!.items.filter(i => i.id !== itemId);
-          this.loadLists();
-        },
-        error: () => this.error = 'Failed to delete item.'
-      });
-    }
+    this.confirmationService.confirm(`Delete item "${item.name}"?`).then(accepted => {
+      if (accepted) {
+        this.itemService.deleteGroceryItem({ id: itemId }).subscribe({
+          next: () => {
+            // Remove item from selectedList.items
+            this.selectedList!.items = this.selectedList!.items.filter(i => i.id !== itemId);
+            this.loadLists();
+          },
+          error: () => this.error = 'Failed to delete item.'
+        });
+      }
+    });
   }
 
   toggleItem(item: GroceryItem) {

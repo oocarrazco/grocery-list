@@ -4,6 +4,9 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { GroceryListService } from './services/grocery-list.service';
 import { GroceryList } from './models/grocery-list.model';
+
+import { ConfirmationService, ConfirmationRequest } from './services/confirmation.service';
+import { ConfirmDialogComponent } from './components/confirm-dialog/confirm-dialog.component';
 import { Component, OnInit } from '@angular/core';
 import { HeaderComponent } from './components/header/header.component';
 import { FooterComponent } from './components/footer/footer.component';
@@ -21,7 +24,8 @@ import { LoginComponent } from './components/login/login.component';
     HeaderComponent,
     FooterComponent,
     GroceryListManagerComponent,
-    LoginComponent
+    LoginComponent,
+    ConfirmDialogComponent
   ],
   templateUrl: './app.component.html',
   styleUrls: ['./app.component.css']
@@ -29,9 +33,23 @@ import { LoginComponent } from './components/login/login.component';
 export class GroceryListComponent implements OnInit {
   groceryLists: GroceryList[] = [];
 
-  constructor(private groceryListService: GroceryListService, public authService: AuthService) {}
+  // Confirmation dialog state
+  confirmMessage: string | null = null;
+  private confirmResolve?: (value: boolean) => void;
+
+  constructor(
+    private groceryListService: GroceryListService,
+    public authService: AuthService,
+    private confirmationService: ConfirmationService
+  ) {}
 
   ngOnInit(): void {
+    // Subscribe to confirmation requests
+    this.confirmationService.requests$.subscribe((req: ConfirmationRequest) => {
+      this.confirmMessage = req.message;
+      this.confirmResolve = req.resolve;
+    });
+
     if (this.authService.isLoggedIn()) {
       this.loadGroceryLists();
     }
@@ -48,5 +66,13 @@ export class GroceryListComponent implements OnInit {
 
   afterLogin(): void {
     this.loadGroceryLists();
+  }
+  
+  onDialogResult(result: boolean) {
+    if (this.confirmResolve) {
+      this.confirmResolve(result);
+    }
+    this.confirmMessage = null;
+    this.confirmResolve = undefined;
   }
 }
