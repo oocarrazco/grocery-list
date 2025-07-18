@@ -20,6 +20,9 @@ export class AuthService {
 
   constructor(private http: HttpClient) {}
 
+  /**
+   * Logs the user in, persists auth state to localStorage and emits via BehaviorSubject.
+   */
   login(username: string, password: string): Observable<LoginResponse> {
     return this.http.post<LoginResponse>(this.loginUrl, { username, password }).pipe(
       tap((res) => {
@@ -34,10 +37,12 @@ export class AuthService {
     );
   }
 
+  /** Registers a new user account. */
   register(username: string, password: string): Observable<LoginResponse> {
     return this.http.post<LoginResponse>(`${environment.apiUrl}/api/Auth/register`, { username, password });
   }
 
+  /** Clears local storage and emits logged-out state. */
   logout(): void {
     localStorage.removeItem(this.storageKey);
     localStorage.removeItem(this.usernameKey);
@@ -45,6 +50,7 @@ export class AuthService {
     this.loggedInSubject.next(false);
   }
 
+  /** Returns true when the user has an auth flag in localStorage. */
   isLoggedIn(): boolean {
     return localStorage.getItem(this.storageKey) === 'true';
   }

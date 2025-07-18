@@ -6,6 +6,9 @@ using Microsoft.EntityFrameworkCore;
 
 namespace GroceryListApi.Controllers
 {
+    /// <summary>
+    /// Handles user authentication and registration.
+    /// </summary>
     [ApiController]
     [Route("api/[controller]")]
     public class AuthController : ControllerBase
@@ -19,6 +22,10 @@ namespace GroceryListApi.Controllers
             _logger = logger;
         }
 
+        /// <summary>
+        /// Logs a user in with username and password.
+        /// Returns 200 with userId when credentials are valid; otherwise 401.
+        /// </summary>
         [HttpPost("login")]
         public async Task<ActionResult<LoginResponseDto>> Login([FromBody] LoginRequestDto loginDto)
         {
@@ -42,6 +49,9 @@ namespace GroceryListApi.Controllers
             return Ok(new LoginResponseDto { Message = "Login successful", UserId = user.Id });
         }
 
+        /// <summary>
+        /// Registers a new user. Returns 409 when the username already exists.
+        /// </summary>
         [HttpPost("register")]
         public async Task<ActionResult<LoginResponseDto>> Register([FromBody] LoginRequestDto registerDto)
         {

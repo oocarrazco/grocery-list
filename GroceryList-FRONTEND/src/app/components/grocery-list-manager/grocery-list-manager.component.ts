@@ -13,6 +13,9 @@ import { LoggingService } from '../../services/logging.service';
 import { ConfirmationService } from '../../services/confirmation.service';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 
+/**
+ * UI component that handles creation, editing, deletion and item management for grocery lists.
+ */
 @Component({
   selector: 'app-grocery-list-manager',
   templateUrl: './grocery-list-manager.component.html',
@@ -192,8 +195,6 @@ export class GroceryListManagerComponent implements OnInit {
       }
     });
   }
-
-  // ...existing code...
 
   deleteItem(itemId: number) {
     if (!this.selectedList) return;

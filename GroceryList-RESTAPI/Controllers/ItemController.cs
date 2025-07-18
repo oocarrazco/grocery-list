@@ -4,6 +4,9 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace GroceryListApi.Controllers
 {
+    /// <summary>
+    /// Provides CRUD operations for individual grocery items.
+    /// </summary>
     [ApiController]
     [Route("api/[controller]")]
     public class ItemController : ControllerBase
@@ -16,6 +19,9 @@ namespace GroceryListApi.Controllers
             _logger = logger;
         }
 
+        /// <summary>
+        /// Returns every item in the system.
+        /// </summary>
         [HttpGet]
         public async Task<ActionResult<List<Item>>> GetAllItems()
         {
@@ -25,6 +31,9 @@ namespace GroceryListApi.Controllers
             return Ok(items);
         }
 
+        /// <summary>
+        /// Returns an item by id.
+        /// </summary>
         [HttpGet("{id}")]
         public async Task<ActionResult<Item>> GetItemById(int id)
         {
@@ -38,6 +47,9 @@ namespace GroceryListApi.Controllers
             return Ok(item);
         }
 
+        /// <summary>
+        /// Creates a new item.
+        /// </summary>
         [HttpPost]
         public async Task<ActionResult> CreateItem([FromBody] Item item)
         {
@@ -47,6 +59,9 @@ namespace GroceryListApi.Controllers
             return CreatedAtAction(nameof(GetItemById), new { id = item.Id }, item);
         }
 
+        /// <summary>
+        /// Updates an existing item.
+        /// </summary>
         [HttpPut("{id}")]
         public async Task<ActionResult> UpdateItem(int id, [FromBody] Item item)
         {
@@ -61,6 +76,9 @@ namespace GroceryListApi.Controllers
             return Ok(new { id = updatedItem.Id, item = updatedItem });
         }
 
+        /// <summary>
+        /// Deletes an item by id.
+        /// </summary>
         [HttpDelete("{id}")]
         public async Task<ActionResult> DeleteItem(int id)
         {
@@ -76,6 +94,9 @@ namespace GroceryListApi.Controllers
             return NoContent();
         }
 
+        /// <summary>
+        /// Toggles the purchase status of a given item.
+        /// </summary>
         [HttpPatch("{id}/toggle-purchase")]
         public async Task<ActionResult> TogglePurchaseStatus(int id, [FromBody] TogglePurchaseRequest request)
         {
@@ -91,7 +112,5 @@ namespace GroceryListApi.Controllers
             _logger.LogInformation("Item with id={Id} purchase status updated to {IsPurchased}", id, existingItem.IsPurchased);
             return Ok(existingItem);
         }
-
-        // ...existing code...
     }
 }
