@@ -1,0 +1,3 @@
+# Ignore build output for test project
+GroceryListApi.Tests/bin/
+GroceryListApi.Tests/obj/ 
