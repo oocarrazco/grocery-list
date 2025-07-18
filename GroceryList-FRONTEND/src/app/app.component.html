@@ -21,6 +21,8 @@
     <app-grocery-list-manager (listChanged)="loadGroceryLists()"></app-grocery-list-manager>
   </div>
   <app-footer></app-footer>
+
+<app-confirm-dialog *ngIf="confirmMessage" [message]="confirmMessage" (confirmed)="onDialogResult($event)"></app-confirm-dialog>
 </ng-container>
 <ng-template #loginBlock>
   <app-login (loggedIn)="afterLogin()"></app-login>
