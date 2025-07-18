@@ -1,3 +1,7 @@
 <header class="header">
-  <h1>Family Grocery List</h1>
+  <h1 class="title">Family Grocery List</h1>
+  <div class="user-actions" *ngIf="authService.isLoggedIn()">
+    <span class="username">{{ authService.currentUser }}</span>
+    <button class="link-btn" (click)="logout()">Logout</button>
+  </div>
 </header>

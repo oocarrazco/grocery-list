@@ -1,11 +1,10 @@
 
 <div class="mb-6">
-  <!-- <h1 class="display-6 mb-6 text-center" style="color: #1a3c6e;">Family Grocery List</h1> -->
 
   <!-- Create/Rename List Form -->
   <form (ngSubmit)="saveList()" class="d-flex gap-2 mb-4 align-items-center">
     <input type="text" [(ngModel)]="listName" name="listName" class="form-control" placeholder="Enter list name" required />
-    <button type="submit" class="btn btn-primary">
+    <button type="submit" class="btn btn-primary gl-btn">
       {{ isEditing ? 'Save' : 'Create' }}
     </button>
     <button *ngIf="isEditing" type="button" class="btn btn-secondary" (click)="cancelEdit()">Cancel</button>
@@ -24,7 +23,7 @@
       <div class="flex-grow-1 text-start">{{ list.name }}</div>
       <div class="w-25">
         <div class="d-flex flex-wrap gap-2 justify-content-center">
-          <button class="btn btn-sm btn-primary" (click)="editList(list)">Edit</button>
+          <button class="btn btn-sm btn-primary gl-btn" (click)="editList(list)">Edit</button>
           <button class="btn btn-sm btn-danger" (click)="deleteList(list)">Delete</button>
           <button class="btn btn-sm btn-outline-secondary" (click)="selectListForItems(list)">Items</button>
         </div>
@@ -35,7 +34,7 @@
     </div>
   </div>
 
-  <!-- Item Management UI (shown only when a list is selected for items) -->
+  <!-- Shown when a list is selected for items -->
   <div *ngIf="selectedList && !isEditing" class="mt-4">
     <h2 class="p-3 border-bottom text-center" style="color: #1a3c6e;">Items for: {{ selectedList.name }}</h2>
     <app-add-item
