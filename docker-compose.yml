@@ -18,7 +18,8 @@ services:
     build:
       context: ./GroceryList-RESTAPI
       dockerfile: Dockerfile
-    container_name: grocerylist-backend    
+    container_name: grocerylist-backend
+    restart: unless-stopped    
     environment:
       - ASPNETCORE_ENVIRONMENT=Development
       - ConnectionStrings__DefaultConnection=Server=db;Database=grocery_list_db;User=sa;Password=YourStrong!Passw0rd;TrustServerCertificate=True;
